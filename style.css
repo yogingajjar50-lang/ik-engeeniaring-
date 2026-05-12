@@ -46,27 +46,28 @@ nav {
     position: fixed;
     top: 0;
     width: 100%;
-    padding: 20px 50px;
+    padding: 15px 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(10, 25, 47, 0.85);
+    background: rgba(10, 25, 47, 0.95);
     backdrop-filter: blur(10px);
     z-index: 1000;
     transition: var(--transition);
 }
 
 nav.scrolled {
-    padding: 15px 50px;
+    padding: 10px 5%;
     box-shadow: 0 10px 30px -10px rgba(2, 12, 27, 0.7);
 }
 
 .logo {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 800;
     color: var(--white);
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
+    white-space: nowrap;
 }
 
 .logo span {
@@ -79,14 +80,14 @@ nav.scrolled {
 }
 
 .nav-links li {
-    margin-left: 30px;
+    margin-left: 15px;
 }
 
 .nav-links a {
     text-decoration: none;
     color: var(--text-light);
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     transition: var(--transition);
     position: relative;
 }
@@ -165,13 +166,15 @@ nav.scrolled {
 }
 
 .btn {
-    padding: 15px 35px;
+    padding: 12px 25px;
     border-radius: 4px;
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: var(--transition);
     cursor: pointer;
+    display: inline-block;
+    white-space: nowrap;
 }
 
 .btn-primary {
@@ -197,7 +200,7 @@ nav.scrolled {
 
 /* Sections */
 section {
-    padding: 100px 10%;
+    padding: 80px 5%;
 }
 
 .section-title {
@@ -285,9 +288,39 @@ section {
 /* Responsive */
 @media (max-width: 768px) {
     .hero h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+    }
+    .hero p {
+        font-size: 1rem;
     }
     nav {
-        padding: 15px 20px;
+        padding: 10px 15px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+    }
+    .nav-links li {
+        margin: 0 10px;
+    }
+    .cta-group {
+        flex-direction: column;
+        width: 100%;
+        padding: 0 20px;
+    }
+    .section-title {
+        font-size: 2rem;
+    }
+    section {
+        padding: 60px 20px;
+    }
+    #partner div {
+        grid-template-columns: 1fr !important;
+    }
+    .btn {
+        width: 100%;
+        text-align: center;
     }
 }
