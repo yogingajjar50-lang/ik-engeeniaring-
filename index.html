@@ -934,7 +934,9 @@
             <a href="https://wa.me/917572867719" target="_blank"><i class="fa-brands fa-whatsapp"></i> +91 7572867719</a>
         </div>
         <div style="display: flex; align-items: center; gap: 12px;">
-            <button class="admin-toggle-btn" onclick="openAdminModal()"><i class="fa-solid fa-gauge-high"></i> Admin Portal</button>
+            <button class="admin-toggle-btn" id="topBarAdminBtn" onclick="openAdminModal()">
+                <i class="fa-solid fa-lock" id="adminBtnIcon"></i> <span id="adminBtnText">Admin Login</span>
+            </button>
             <button class="admin-toggle-btn" onclick="openOrdersModal()"><i class="fa-solid fa-box-open"></i> Track Order</button>
         </div>
     </div>
@@ -1114,7 +1116,6 @@
                 <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;">
                     <a href="#shop" style="color: var(--text-dim); text-decoration: none;">All Products</a>
                     <a href="javascript:void(0)" onclick="openOrdersModal()" style="color: var(--text-dim); text-decoration: none;">Order Tracking</a>
-                    <a href="javascript:void(0)" onclick="openAdminModal()" style="color: var(--text-dim); text-decoration: none;">Admin Inventory</a>
                 </div>
             </div>
             <div>
@@ -1127,7 +1128,10 @@
             </div>
         </div>
         <div style="text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 20px; font-size: 0.75rem; color: var(--text-dim);">
-            &copy; 2026 IK Group. All Rights Reserved. &bull; CNC Tools E-Commerce Platform
+            &copy; 2026 IK Group. All Rights Reserved. &bull; CNC Tools E-Commerce Platform &bull; 
+            <span onclick="triggerAdminAuth()" style="cursor: pointer; opacity: 0.35; font-size: 0.7rem;" title="Restricted Staff Login">
+                <i class="fa-solid fa-lock"></i> Staff Login
+            </span>
         </div>
     </footer>
 
@@ -1270,12 +1274,75 @@
         </div>
     </div>
 
+    <!-- Admin Device Authorization & Security Modal -->
+    <div class="modal" id="adminAuthModal">
+        <div class="modal-content" style="max-width: 440px; border-color: var(--accent-blue);">
+            <div class="modal-header">
+                <h3 style="color: var(--white); font-size: 1.15rem;">
+                    <i class="fa-solid fa-shield-halved" style="color: var(--accent-blue); margin-right: 8px;"></i> Admin Device Security
+                </h3>
+                <button class="close-btn" onclick="closeModal('adminAuthModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div style="background: rgba(10, 25, 47, 0.7); padding: 14px; border-radius: 6px; margin-bottom: 18px; border: 1px solid rgba(100, 255, 218, 0.15);">
+                <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.5;">
+                    <strong style="color: var(--accent-blue);">Restricted Access:</strong> This administrative portal is protected and limited to <strong>only 2 authorized company devices</strong>.
+                </p>
+            </div>
+
+            <form id="adminAuthForm" onsubmit="handleAdminDeviceAuth(event)">
+                <div class="form-group">
+                    <label>Master Admin Gmail ID *</label>
+                    <input type="email" class="form-control" id="adminEmailInput" required placeholder="yogigajjar78@gmail.com" autocomplete="email">
+                    <span style="font-size: 0.72rem; color: var(--text-dim); margin-top: 4px;">Authorized Admin: <code>yogigajjar78@gmail.com</code></span>
+                </div>
+
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>Admin Security Passcode *</label>
+                    <input type="password" class="form-control" id="adminPasscodeInput" required placeholder="Enter Admin Passcode" autocomplete="current-password">
+                    <span style="font-size: 0.72rem; color: var(--text-dim); margin-top: 4px;">Master Passcode: <code>IK@2026</code></span>
+                </div>
+
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>Authorize Device Slot *</label>
+                    <select class="form-control" id="adminDeviceSlotSelect">
+                        <option value="Device 1 (Primary Workstation / PC)">Device 1 (Primary Workstation / PC)</option>
+                        <option value="Device 2 (Owner Mobile / Phone)">Device 2 (Owner Mobile / Phone)</option>
+                    </select>
+                </div>
+
+                <div id="adminAuthError" style="display: none; color: #ef4444; font-size: 0.8rem; margin: 10px 0; background: rgba(239, 68, 68, 0.1); padding: 8px; border-radius: 4px;">
+                    <i class="fa-solid fa-circle-exclamation"></i> <span id="adminAuthErrorMsg">Access denied.</span>
+                </div>
+
+                <button type="submit" class="checkout-btn" style="margin-top: 15px;">
+                    <i class="fa-solid fa-key"></i> Authorize &amp; Unlock Device
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Admin Dashboard Modal -->
     <div class="modal" id="adminModal">
         <div class="modal-content" style="max-width: 850px;">
             <div class="modal-header">
                 <h3 style="color: var(--white); font-size: 1.25rem;"><i class="fa-solid fa-gears" style="color: var(--accent-blue); margin-right: 8px;"></i> IK Group Admin &bull; Inventory Management</h3>
                 <button class="close-btn" onclick="closeModal('adminModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- Device Authorization Status Bar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 9px 14px; border-radius: 6px; margin-bottom: 18px; flex-wrap: wrap; gap: 8px;">
+                <div style="font-size: 0.8rem; color: #34d399; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-circle-check"></i> <strong>Admin:</strong> <span id="currentAdminEmailBadge" style="color: var(--white); font-weight: 600;">yogigajjar78@gmail.com</span> &bull; <span id="currentDeviceLabel">Device 1</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="qty-btn" style="width: auto; padding: 4px 10px; font-size: 0.75rem; background: rgba(255,255,255,0.08);" onclick="changeAdminPasscode()">
+                        <i class="fa-solid fa-key"></i> Change Passcode
+                    </button>
+                    <button type="button" class="qty-btn" style="width: auto; padding: 4px 10px; font-size: 0.75rem; color: #ef4444; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3);" onclick="deauthorizeThisDevice()">
+                        <i class="fa-solid fa-lock"></i> Lock / Deauthorize This Device
+                    </button>
+                </div>
             </div>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px;">
@@ -1686,6 +1753,11 @@
             document.getElementById('statTotalProducts').innerText = productsDB.length + '+';
             document.getElementById('adminTotalSkus').innerText = productsDB.length;
             renderAdminView();
+            checkAdminDeviceStatus();
+            if (window.location.hash === '#admin') {
+                triggerAdminAuth();
+                history.replaceState(null, null, ' ');
+            }
         }
 
         // Render Product Cards
@@ -1984,10 +2056,147 @@
             openModal('ordersModal');
         }
 
+        // Admin Device Authorization & Security
+        const MASTER_ADMIN_GMAIL = 'yogigajjar78@gmail.com';
+
+        function isAdminDeviceAuthorized() {
+            return localStorage.getItem('ik_admin_authorized') === 'true';
+        }
+
+        function getAdminPasscode() {
+            return localStorage.getItem('ik_admin_passcode') || 'IK@2026';
+        }
+
+        function checkAdminDeviceStatus() {
+            const btn = document.getElementById('topBarAdminBtn');
+            const btnText = document.getElementById('adminBtnText');
+            const btnIcon = document.getElementById('adminBtnIcon');
+            const isAuth = isAdminDeviceAuthorized();
+            if (btn && btnText && btnIcon) {
+                if (isAuth) {
+                    btnText.innerText = "Admin Portal";
+                    btnIcon.className = "fa-solid fa-gauge-high";
+                    btn.style.background = "rgba(100, 255, 218, 0.18)";
+                    btn.style.borderColor = "var(--accent-blue)";
+                    btn.style.color = "var(--accent-blue)";
+                } else {
+                    btnText.innerText = "Admin Login";
+                    btnIcon.className = "fa-solid fa-lock";
+                    btn.style.background = "rgba(255, 255, 255, 0.08)";
+                    btn.style.borderColor = "rgba(255, 255, 255, 0.2)";
+                    btn.style.color = "var(--text-light)";
+                }
+            }
+            const label = document.getElementById('currentDeviceLabel');
+            if (label && isAuth) {
+                label.innerText = localStorage.getItem('ik_admin_device_slot') || 'Authorized Device';
+            }
+            const emailBadge = document.getElementById('currentAdminEmailBadge');
+            if (emailBadge && isAuth) {
+                emailBadge.innerText = localStorage.getItem('ik_admin_email') || MASTER_ADMIN_GMAIL;
+            }
+        }
+
+        function triggerAdminAuth() {
+            if (isAdminDeviceAuthorized()) {
+                openAdminModal();
+            } else {
+                openModal('adminAuthModal');
+            }
+        }
+
         function openAdminModal() {
+            if (!isAdminDeviceAuthorized()) {
+                const emailInp = document.getElementById('adminEmailInput');
+                if (emailInp && !emailInp.value) {
+                    emailInp.value = MASTER_ADMIN_GMAIL;
+                }
+                openModal('adminAuthModal');
+                return;
+            }
             renderAdminView();
             openModal('adminModal');
         }
+
+        function handleAdminDeviceAuth(e) {
+            e.preventDefault();
+            const email = (document.getElementById('adminEmailInput').value || '').trim().toLowerCase();
+            const input = (document.getElementById('adminPasscodeInput').value || '').trim();
+            const slot = document.getElementById('adminDeviceSlotSelect').value;
+            const errDiv = document.getElementById('adminAuthError');
+            const errMsg = document.getElementById('adminAuthErrorMsg');
+
+            if (email !== MASTER_ADMIN_GMAIL.toLowerCase()) {
+                if (errDiv && errMsg) {
+                    errMsg.innerText = `Access Denied: ${email} is not registered as Master Admin. Only ${MASTER_ADMIN_GMAIL} is authorized.`;
+                    errDiv.style.display = 'block';
+                }
+                return;
+            }
+
+            if (input !== getAdminPasscode()) {
+                if (errDiv && errMsg) {
+                    errMsg.innerText = "Invalid Admin Security Passcode.";
+                    errDiv.style.display = 'block';
+                }
+                return;
+            }
+
+            // Both Gmail and Passcode match!
+            localStorage.setItem('ik_admin_authorized', 'true');
+            localStorage.setItem('ik_admin_email', email);
+            localStorage.setItem('ik_admin_device_slot', slot);
+            if (errDiv) errDiv.style.display = 'none';
+            document.getElementById('adminPasscodeInput').value = '';
+            closeModal('adminAuthModal');
+            checkAdminDeviceStatus();
+            renderAdminView();
+            openModal('adminModal');
+            alert(`Master Admin Verified!\n\nEmail: ${email}\nDevice: ${slot}\n\nThe Admin Portal is now unlocked for this authorized device.`);
+        }
+
+        function deauthorizeThisDevice() {
+            if (confirm("Are you sure you want to deauthorize / lock this device?\n\nYou will need the Admin Passcode and Gmail to unlock it again.")) {
+                localStorage.removeItem('ik_admin_authorized');
+                localStorage.removeItem('ik_admin_email');
+                localStorage.removeItem('ik_admin_device_slot');
+                closeModal('adminModal');
+                checkAdminDeviceStatus();
+                alert("This device has been deauthorized.\nThe Admin Portal is now locked and completely hidden.");
+            }
+        }
+
+        function changeAdminPasscode() {
+            const curr = prompt("Enter Current Admin Passcode:");
+            if (curr === null) return;
+            if (curr !== getAdminPasscode()) {
+                alert("Incorrect current passcode.");
+                return;
+            }
+            const newCode = prompt("Enter New Admin Passcode (minimum 4 characters):");
+            if (newCode && newCode.trim().length >= 4) {
+                localStorage.setItem('ik_admin_passcode', newCode.trim());
+                alert("Admin Passcode updated successfully! Remember your new passcode for your other authorized device.");
+            } else if (newCode !== null) {
+                alert("Passcode must be at least 4 characters long.");
+            }
+        }
+
+        // Secret Keyboard Shortcut: Ctrl + Shift + A to open Admin Verification
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+                e.preventDefault();
+                triggerAdminAuth();
+            }
+        });
+
+        // Hash trigger: e.g. #admin in URL
+        window.addEventListener('hashchange', () => {
+            if (window.location.hash === '#admin') {
+                triggerAdminAuth();
+                history.replaceState(null, null, ' ');
+            }
+        });
 
         function renderAdminView() {
             const totalRev = ordersDB.reduce((s, o) => s + o.total, 0);
